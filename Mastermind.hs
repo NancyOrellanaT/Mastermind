@@ -85,8 +85,12 @@ main = do
             modo1J nG turnos
         2-> do
             putStrLn "Eligió la opción 2. ¡Vamos a comenzar!"
-            let turnos = 10
-            modo2J turnos
+            putStrLn "Primero el jugador 1 ingresará la lista de colores y el jugador 2 deberá adivinarla."
+            putStrLn "Luego será el turno del jugador 2. Quien consiga adivinar primero durante tres partidas, gana el juego."
+            let pJ1 = 0
+            let pJ2 = 0
+            let turno = 1
+            modo2J turno pJ1 pJ2
         3-> do
             putStrLn "Para comenzar a jugar debes saber que las listas de 4 colores que puedes ingresar"
             putStrLn "pueden estar compuestos de los siguientes colores:"
@@ -117,7 +121,7 @@ modo1J numeroGenerado t = do
                                                     then do
                                                         putStrLn "¡Felicidades!, ganaste el juego :D"
                                                 else do
-                                                    putStrLn "Ingresa nuevamente una lista de palabras"
+                                                    putStrLn "Ingresa nuevamente una lista de colores"
                                                     putStr "Turnos faltantes: "
                                                     print (show (t - 1))
                                                     putStr "Pista: "
@@ -137,9 +141,92 @@ modo1J numeroGenerado t = do
                             print listaColores
 
 -- modo2Jugadores: El primer jugador ingresa la palabra y el otro debe adivinarla
-modo2J turnos = do
-        putStrLn "Primero el jugador 1 ingresará la palabra y el jugador 2 deberá adivinarla."
-        
+
+modo2J  turno pJ1 pJ2 = do
+        if (pJ1 < 3 && pJ2 < 3) 
+            then do
+                let intentos = 5
+                if (odd turno)
+                    then do
+                        -- jugador 1
+                        putStrLn "J1->Ingresa la lista de colores que tu oponente deberá adivinar: "
+                        listaColores <- getLine
+                        if (listaColores /= "")
+                            then do
+                                putStrLn . concat $ ["\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n","\n"]
+                                putStrLn "--------------------------------------------------------------------------------------------------"
+                                putStrLn "Es tu turno jugador 2. ¡Suerte!"
+                                jugador listaColores intentos
+
+                        else do
+                            putStrLn "Debes ingresar correctamente el código. Intentálo otra vez."
+                            modo2J turno pJ1 pJ2
+                else do
+                    -- jugador 2
+                    putStrLn "J2->Ingresa la lista de colores que tu oponente deberá adivinar: " 
+
+        else do
+            if (pJ1 == 3) 
+                then do
+                    putStrLn "¡Ganó el jugador 1!"
+                    putStrLn "Vuelve al menú principal y elige la opción que desees."
+                    main
+            else do
+                putStrLn "¡Ganó el jugador 2!"
+                putStrLn "Vuelve al menú principal y elige la opción que desees."
+                main
+
+
+-- Es parte del turno del jugador que le toque adivinar
+jugador lista i = do
+                 if (intentos > 0)
+                    then do
+                        putStr "Tu crees que la lista de colores es: "
+                        lC <- getLine
+                        return ()
+
+                 else do
+                    putStrLn "Lo sentimos, perdiste :("
+                    putStr "La respuesta era: "
+                    print lista
+
+
+-----------------------------------------------------------------------------------------------------
+putStrLn "--------------------------------------------------------------------------------------------------------"
+if (t > 0)
+   then do
+         putStr "Tu respuesta: "
+         r <- getLine
+         if (r /= "")
+           then do 
+               let respuesta = convertir (r)
+               if (listaUnica respuesta)
+                   then do
+                       let similitudes = (evaluarEntrada respuesta listaColores listaColores)
+                       if (ganoElJuego similitudes)
+                           then do
+                               putStrLn "¡Felicidades!, ganaste el juego :D"
+                       else do
+                           putStrLn "Ingresa nuevamente una lista de colores"
+                           putStr "Turnos faltantes: "
+                           print (show (t - 1))
+                           putStr "Pista: "
+                           print similitudes
+                           modo1J numeroGenerado (t - 1)
+               else do
+                   putStrLn "Datos ingresados incorrectamente, asegurate que la lista solo contenga los colores establecidos en el juego."
+                   modo1J numeroGenerado t
+                   putStr "Turnos faltantes: "
+                   print t
+         else do
+           putStrLn "Debes ingresar una lista con cuatro elementos, para poder adivinar y ganar."
+           modo1J numeroGenerado t           
+else do
+   putStrLn "Lo sentimos, perdiste :("
+   putStr "La respuesta era: "
+   print listaColores
+
+------------------------------------------------------------------------------------------------------------------
 
 -- Genera una lista de 4 elementos unicos
 generar :: IO [Int]
@@ -147,5 +234,6 @@ generar = do
       g <- newStdGen
       let numeros = (randomRs (0,6) g :: [Int])
       return (gLNumeros cantidad numeros)
+
 
 
